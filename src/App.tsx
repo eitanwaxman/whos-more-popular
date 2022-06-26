@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
@@ -8,16 +8,49 @@ declare global {
   }
 }
 
+let FB = window.FB;
+
+type Auth = {
+  status: String;
+  authResponse: {
+    accessToken: String;
+    expiresIn: Date;
+    reauthorize_required_in: Number;
+    graphDomain: "facebook";
+    signedRequest: String;
+    userID: String;
+  };
+};
+
 function App() {
-  let FB = window.FB;
+  const [userToken, setUserToken] = useState<String>();
+
   useEffect(() => {
-    FB.getLoginStatus(function (response: Object) {
+    FB.getLoginStatus(function (response: Auth) {
       console.log(response);
+      if (response.status === "connected") {
+        setUserToken(response.authResponse.accessToken);
+      }
     });
   }, []);
 
   const logInWithFacebook = async () => {
-    const response = await FB.login();
+    FB.login(
+      (response: Auth) => {
+        console.log(response);
+        if (response.status === "connected") {
+          setUserToken(response.authResponse.accessToken);
+        }
+      },
+      {
+        scope: "instagram_basic, pages_show_list",
+      }
+    );
+  };
+
+  const getUsersPages = async () => {
+    const url = `https://graph.facebook.com/v14.0/me/accounts?access_token=${userToken}`;
+    const response = await fetch(url);
     console.log(response);
   };
 
@@ -25,6 +58,7 @@ function App() {
     <>
       <div className="login">
         <button onClick={logInWithFacebook}>Log in with Facebook</button>
+        <button onClick={getUsersPages}>Get Pages</button>
       </div>
     </>
   );
