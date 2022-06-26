@@ -2,10 +2,16 @@ import React, { useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
+declare global {
+  interface Window {
+    FB: any;
+  }
+}
+
 function App() {
+  let FB = window.FB;
   useEffect(() => {
-    FB.getLoginStatus(function (response) {
-      statusChangeCallback(response);
+    FB.getLoginStatus(function (response: Object) {
       console.log(response);
     });
   }, []);
