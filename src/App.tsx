@@ -16,10 +16,15 @@ function App() {
     });
   }, []);
 
+  const logInWithFacebook = async () => {
+    const response = await FB.login();
+    console.log(response);
+  };
+
   return (
     <>
       <div className="login">
-        <button>Log in with Facebook</button>
+        <button onClick={logInWithFacebook}>Log in with Facebook</button>
       </div>
     </>
   );
