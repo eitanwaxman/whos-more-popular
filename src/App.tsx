@@ -22,8 +22,13 @@ type Auth = {
   };
 };
 
+// type Page = {
+//   name: String;
+// };
+
 function App() {
   const [userToken, setUserToken] = useState<String>();
+  const [pages, setPages] = useState<Array<Object>>();
 
   useEffect(() => {
     FB.getLoginStatus(function (response: Auth) {
@@ -51,7 +56,9 @@ function App() {
   const getUsersPages = async () => {
     const url = `https://graph.facebook.com/v14.0/me/accounts?access_token=${userToken}`;
     const response = await fetch(url);
-    console.log(response);
+    const pagesList = await response.json();
+    console.log(pagesList);
+    setPages(pagesList);
   };
 
   return (
@@ -59,6 +66,9 @@ function App() {
       <div className="login">
         <button onClick={logInWithFacebook}>Log in with Facebook</button>
         <button onClick={getUsersPages}>Get Pages</button>
+        {pages?.map((page: any) => (
+          <p>{page.name}</p>
+        ))}
       </div>
     </>
   );
