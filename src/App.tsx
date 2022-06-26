@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
 function App() {
+  useEffect(() => {
+    FB.getLoginStatus(function (response) {
+      statusChangeCallback(response);
+      console.log(response);
+    });
+  }, []);
+
   return (
     <>
       <div className="login">
