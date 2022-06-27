@@ -22,13 +22,16 @@ type Auth = {
   };
 };
 
-// type Page = {
-//   name: String;
-// };
+type Page = {
+  name: String;
+  id: String;
+};
 
 function App() {
   const [userToken, setUserToken] = useState<String>();
   const [pages, setPages] = useState<Array<Object>>();
+  const [selectedPage, setSelectedPage] = useState<Page>();
+  const [instagramAccount, setInsagramAccount] = useState<any>();
 
   useEffect(() => {
     FB.getLoginStatus(function (response: Auth) {
@@ -58,8 +61,27 @@ function App() {
     const response = await fetch(url);
     const pagesList = await response.json();
     console.log(pagesList);
-    setPages(pagesList);
+    setPages(pagesList.data);
   };
+
+  const handleChoosePage = (page: Page) => {
+    setSelectedPage(page);
+    console.log(page);
+  };
+
+  const getInstagramBusinessAccount = async () => {
+    if (selectedPage) {
+      const url = `https://graph.facebook.com/v14.0/${selectedPage.id}?fields=instagram_business_account&access_token=${userToken}`;
+      const response = await fetch(url);
+      const instagramAccountData = await response.json();
+      setInsagramAccount(instagramAccountData);
+      console.log(instagramAccountData);
+    }
+  };
+
+  useEffect(() => {
+    getInstagramBusinessAccount();
+  }, [selectedPage]);
 
   return (
     <>
@@ -67,7 +89,7 @@ function App() {
         <button onClick={logInWithFacebook}>Log in with Facebook</button>
         <button onClick={getUsersPages}>Get Pages</button>
         {pages?.map((page: any) => (
-          <p>{page.name}</p>
+          <p onClick={() => handleChoosePage(page)}>{page.name}</p>
         ))}
       </div>
     </>
