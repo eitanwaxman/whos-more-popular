@@ -32,6 +32,8 @@ function App() {
   const [pages, setPages] = useState<Array<Object>>();
   const [selectedPage, setSelectedPage] = useState<Page>();
   const [instagramAccount, setInsagramAccount] = useState<any>();
+  const [username, setUsername] = useState<any>("");
+  const [accountFollowers, setAccountFollowers] = useState<any>();
 
   useEffect(() => {
     FB.getLoginStatus(function (response: Auth) {
@@ -83,6 +85,19 @@ function App() {
     getInstagramBusinessAccount();
   }, [selectedPage]);
 
+  const getFollowersWithAccountUserName = async () => {
+    const url = `https://graph.facebook.com/v3.2/${instagramAccount.instagram_business_account.id}?fields=business_discovery.username(${username}){followers_count,media_count,media}&access_token=${userToken}`;
+    const response = await fetch(url);
+    const accountData = await response.json();
+    setAccountFollowers(accountData.business_discovery.followers_count);
+    console.log(accountData);
+  };
+
+  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = (event?.target as HTMLInputElement).value;
+    setUsername(value);
+  };
+
   return (
     <>
       <div className="login">
@@ -91,6 +106,12 @@ function App() {
         {pages?.map((page: any) => (
           <p onClick={() => handleChoosePage(page)}>{page.name}</p>
         ))}
+        <label>enter username</label>
+        <input
+          onChange={(event) => handleUsernameChange(event)}
+          value={username}
+        />
+        <button onClick={getFollowersWithAccountUserName}>Search</button>
       </div>
     </>
   );
