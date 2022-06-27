@@ -86,8 +86,10 @@ function App() {
   }, [selectedPage]);
 
   const getFollowersWithAccountUserName = async () => {
-    const url = `https://graph.facebook.com/v3.2/${instagramAccount.instagram_business_account.id}?fields=business_discovery.username(${username}){followers_count,media_count,media}&access_token=${userToken}`;
-    const response = await fetch(url);
+    const url = `https://graph.facebook.com/v3.2/${instagramAccount.instagram_business_account.id}?fields=business_discovery.username(${username}){followers_count}&access_token=${userToken}`;
+    console.log(url);
+    const url2 = `https://graph.facebook.com/v3.2/${instagramAccount.instagram_business_account.id}?fields=business_discovery.username(${username}){followers_count}`;
+    const response = await fetch(url2);
     const accountData = await response.json();
     setAccountFollowers(accountData.business_discovery.followers_count);
     console.log(accountData);
